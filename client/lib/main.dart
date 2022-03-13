@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:client/login/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
           title: const Text('Welcome to Flutter'),
         ),
         body: const Center(
-          child: Text('Hello World'),
+          child: LoginForm(),
         ),
       ),
     );
