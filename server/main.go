@@ -12,7 +12,8 @@ import (
 )
 
 type OTPVerif struct {
-	Otp int `json:"otp"`
+	Otp    string `json:"otp"`
+	Mobile string `json:"mobile_num"`
 }
 
 type application struct {
@@ -26,7 +27,19 @@ func ping(c *gin.Context) {
 }
 
 func (app *application) getOtp(c *gin.Context) {
-	otp, err := app.auth.GetOtp("9825447695")
+
+	type MobileQueryParams struct {
+		MobileNum string `form:"mobile_num"`
+	}
+	var mobileQP MobileQueryParams
+
+	if c.ShouldBindQuery(&mobileQP) != nil {
+		c.JSON(500, gin.H{
+			"response": "Invalid Query Params",
+		})
+	}
+
+	otp, err := app.auth.GetOtp(mobileQP.MobileNum)
 	fmt.Println(err)
 	c.JSON(200, gin.H{
 		"otp": otp,
@@ -36,22 +49,27 @@ func (app *application) getOtp(c *gin.Context) {
 
 func (app *application) verifyOtp(c *gin.Context) {
 	var otp OTPVerif
+	var token string
+	var err error
 
-	if c.ShouldBind(&otp) == nil {
-		log.Print(otp.Otp)
-	} else {
+	if c.ShouldBind(&otp) != nil {
 		log.Println("No Post data")
 	}
 
-	if otp.Otp == 1234 {
+	token, err = app.auth.VerifyOtp(otp.Mobile, otp.Otp)
+	if err != nil {
+		fmt.Print(err)
 		c.JSON(200, gin.H{
-			"response": "Success",
+			"response":      "Fail",
+			"error_details": err,
 		})
-	} else {
-		c.JSON(200, gin.H{
-			"response": "Fail",
-		})
+		return
 	}
+
+	c.JSON(200, gin.H{
+		"response": "Success",
+		"token":    token,
+	})
 
 }
 
