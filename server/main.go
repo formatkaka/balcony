@@ -7,7 +7,9 @@ import (
 
 	"github.com/formatkaka/balcony/pkg/psql"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	_ "github.com/lib/pq"
 )
 
@@ -43,7 +45,7 @@ func (app *application) getOtp(c *gin.Context) {
 	fmt.Println(err)
 	c.JSON(200, gin.H{
 		"otp": otp,
-		"err": err,
+		"err": "",
 	})
 }
 
@@ -76,6 +78,7 @@ func (app *application) verifyOtp(c *gin.Context) {
 func main() {
 
 	r := gin.Default()
+	r.Use(cors.Default())
 
 	const (
 		host     = "localhost"
