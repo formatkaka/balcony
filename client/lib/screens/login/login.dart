@@ -1,3 +1,7 @@
+import 'package:client/screens/home/home.dart';
+import 'package:client/services/login_services.dart';
+import 'package:client/utils/shared_preferences.dart';
+import 'package:client/utils/show_toast.dart';
 import 'package:flutter/material.dart';
 
 import 'field.dart' as FormFieldCustom;
@@ -15,24 +19,38 @@ class _LoginFormState extends State<LoginForm> {
   String buttonState = 'OTP';
   String buttonText = 'Send OTP';
   int mobileNum = 0;
-  int Otp = 0;
+  int otp = 0;
 
   void buttonPressed() {
     if (buttonState == 'OTP') {
       // sendOTP
 
       if (_formKey.currentState!.validate()) {
-        // Process data.
-      }
+        sendOTP(mobileNum.toString()).then((value) {
+          if (value.response != "") {
+            // error
+          } else {
+            setState(() {
+              buttonState = 'CHECK';
+              buttonText = 'Verify OTP';
+            });
 
-      setState(() {
-        buttonState = 'CHECK';
-        buttonText = 'Verify OTP';
-      });
+            showToast(value.otp);
+          }
+        });
+      }
     } else {
       // verify OTP
-      print(mobileNum);
-      print(Otp);
+      verifyOtpAndLogin(mobileNum.toString(), otp.toString()).then((value) {
+        if (value.response == "Success") {
+          print("Hello")
+          saveToSharedPref("accessToken", value.token);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
+        }
+      });
     }
   }
 
@@ -42,16 +60,15 @@ class _LoginFormState extends State<LoginForm> {
     });
   }
 
-  void setOTP(int OtpX) {
+  void setOTP(int otpX) {
     setState(() {
-      Otp = OtpX;
+      otp = otpX;
     });
   }
 
   dynamic numValidator(int length) {
     dynamic innerFunc(String? value) {
       if (value != null && value != '' && value!.length == length) {
-        print("Entered");
         var parseVal = int.tryParse(value!);
         if (parseVal != null) return null;
       }
