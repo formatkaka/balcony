@@ -113,5 +113,5 @@ func main() {
 	// mux.HandleFunc("/login", loginOrSignUp)
 
 	fmt.Println("Starting server on localhost:4000")
-	r.Run("localhost:3000")
+	r.Run("0.0.0.0:3000")
 }
