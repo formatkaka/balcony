@@ -43,11 +43,11 @@ class _LoginFormState extends State<LoginForm> {
       // verify OTP
       verifyOtpAndLogin(mobileNum.toString(), otp.toString()).then((value) {
         if (value.response == "Success") {
-          print("Hello")
+          print("Hello");
           saveToSharedPref("accessToken", value.token);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Home()),
+            MaterialPageRoute(builder: (context) => FlutterContactsExample()),
           );
         }
       });

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 Future<SendOTP> sendOTP(String mobileNum) async {
   final response = await http.get(
-    Uri.parse("http://localhost:3000/otp?mobile_num=$mobileNum"),
+    Uri.parse("http://192.168.0.102:3000/otp?mobile_num=$mobileNum"),
   );
 
   if (response.statusCode == 200) {
@@ -17,7 +17,7 @@ Future<SendOTP> sendOTP(String mobileNum) async {
 
 Future<dynamic> verifyOtpAndLogin(String mobileNum, String otp) async {
   final response = await http.post(
-    Uri.parse("http://localhost:3000/login"),
+    Uri.parse("http://192.168.0.102:3000/login"),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
