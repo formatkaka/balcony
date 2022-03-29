@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/formatkaka/balcony/pkg/psql"
+	"github.com/formatkaka/balcony/pkg/socket"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,8 @@ type OTPVerif struct {
 }
 
 type application struct {
-	auth *psql.Auth
+	auth   *psql.Auth
+	socket *socket.Socket
 }
 
 func ping(c *gin.Context) {
@@ -94,7 +96,8 @@ func main() {
 	db, err1 := sql.Open("postgres", psqlInfo)
 
 	app := &application{
-		auth: &psql.Auth{DB: db},
+		auth:   &psql.Auth{DB: db},
+		socket: &socket.Socket{DB: db},
 	}
 
 	err2 := db.Ping()
@@ -109,6 +112,7 @@ func main() {
 	r.GET("/ping", ping)
 	r.GET("/otp", app.getOtp)
 	r.POST("/login", app.verifyOtp)
+	r.GET("/ws", app.socket.SetUpSocket)
 	// mux.HandleFunc("/verifyotp", verifyOtp)
 	// mux.HandleFunc("/login", loginOrSignUp)
 
